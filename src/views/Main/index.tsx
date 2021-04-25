@@ -52,6 +52,7 @@ const Main = () => {
   let isStartGame = false;
   let snakeLength = initialSnakeLength;
   let snakeBodys = [];
+  let lastTriggerKeyDownEventAt = new Date().getTime();
 
   const draw = (drawIntervalId) => {
     if (canvasRef.current) {
@@ -93,9 +94,15 @@ const Main = () => {
 
       if (appleX === snakeHeadX && appleY === snakeHeadY) {
         snakeLength += 1;
-        [appleX, appleY] = [Math.floor(Math.random() * 13) * 40, Math.floor(Math.random() * 13) * 40];
-      }
+        const [originAppleX, originAppleY] = [appleX, appleY];
+        const isEmptyPosition = (newAppleX, newAppleY) => (
+          snakeBodys.every(snakeBody => snakeBody.x !== newAppleX || snakeBody.y !== newAppleY)
+        );
 
+        while ((originAppleX === appleX && originAppleY === appleY) || !isEmptyPosition(appleX, appleY)) {
+          [appleX, appleY] = [Math.floor(Math.random() * 13) * 40, Math.floor(Math.random() * 13) * 40];
+        }
+      }
       ctx.fillStyle = '#faf3e0';
       ctx.fillRect(appleX, appleY, 40, 40);
     }
@@ -114,6 +121,9 @@ const Main = () => {
 
   useEffect(() => {
     const moveDirection = ({ keyCode }) => {
+      const triggerKeyDownEventAt = new Date().getTime();
+      if (triggerKeyDownEventAt - lastTriggerKeyDownEventAt < 150) return;
+      lastTriggerKeyDownEventAt = triggerKeyDownEventAt;
       isStartGame = true;
       const [TOP, RIGHT, BOTTOM, LEFT] = [38, 39, 40, 37];
       switch (keyCode) {
