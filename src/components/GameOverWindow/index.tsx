@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const GameOverWindow = styled.div`
   width: 520px;
   height: 520px;
-  background: #111217;
+  background: #111217aa;
   position: relative;
   top: ${props => (props.isGameOver ? '-520' : '-1050')}px;
   transition: top 0.5s;
