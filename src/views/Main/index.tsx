@@ -65,13 +65,13 @@ const Main = () => {
       snakeHeadY += yv;
 
       if (snakeHeadX < 0) {
-        snakeHeadX = 480;
+        snakeHeadX = 500;
       }
       if (snakeHeadX > 519) {
         snakeHeadX = 0;
       }
       if (snakeHeadY < 0) {
-        snakeHeadY = 480;
+        snakeHeadY = 500;
       }
       if (snakeHeadY > 519) {
         snakeHeadY = 0;
