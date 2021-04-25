@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import GameOverWindow from '../../components/GameOverWindow';
 
 const MAP_ROW_AND_COLUMN_SIZE = 13;
 
@@ -26,6 +27,7 @@ const GameScreen = styled.div`
   border-radius: 4px;
   display: flex;
   flex-wrap: wrap;
+  overflow: hidden;
 `;
 
 const MapGrid = styled.div`
@@ -39,20 +41,21 @@ const GameCanvas = styled.canvas`
   position: absolute;
 `;
 
+const initialMoveDirection = null;
+const initialSnakeLength = 1;
+
+let [xv, yv] = [0, 0];
+let [snakeHeadX, snakeHeadY] = [240, 240];
+let [appleX, appleY] = [40, 40];
+let currentMoveDirection = initialMoveDirection;
+let isStartGame = false;
+let snakeLength = initialSnakeLength;
+let snakeBodys = [];
+let lastTriggerKeyDownEventAt = new Date().getTime();
 const Main = () => {
+  const [isGameOver, setIsGameOver] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const initialMoveDirection = null;
-  const initialSnakeLength = 5;
-
-  let [xv, yv] = [0, 0];
-  let [snakeHeadX, snakeHeadY] = [240, 240];
-  let [appleX, appleY] = [40, 40];
-  let currentMoveDirection = initialMoveDirection;
-  let isStartGame = false;
-  let snakeLength = initialSnakeLength;
-  let snakeBodys = [];
-  let lastTriggerKeyDownEventAt = new Date().getTime();
 
   const draw = (drawIntervalId) => {
     if (canvasRef.current) {
@@ -83,6 +86,7 @@ const Main = () => {
         ctx.fillRect(snakeBodys[i].x + 1, snakeBodys[i].y + 1, 38, 38);
         if (isStartGame && isSnakeHeadTouchBody(snakeBodys[i].x, snakeBodys[i].y)) {
           snakeLength = initialSnakeLength;
+          setIsGameOver(true);
           clearInterval(drawIntervalId);
         }
       }
@@ -116,6 +120,7 @@ const Main = () => {
     snakeLength = initialSnakeLength;
     snakeBodys = [];
     isStartGame = false;
+    setIsGameOver(false);
     const drawIntervalId = window.setInterval(() => draw(drawIntervalId), 150);
   };
 
@@ -126,6 +131,7 @@ const Main = () => {
       lastTriggerKeyDownEventAt = triggerKeyDownEventAt;
       isStartGame = true;
       const [TOP, RIGHT, BOTTOM, LEFT] = [38, 39, 40, 37];
+      console.log('hi');
       switch (keyCode) {
         case TOP:
           if (currentMoveDirection === BOTTOM) return;
@@ -164,10 +170,12 @@ const Main = () => {
             .map((number, index) => <MapGrid key={index} />)
         }
         <MapGrid />
+        <GameOverWindow
+          score={0}
+          isGameOver={isGameOver}
+          initialGame={initialGame}
+        />
       </GameScreen>
-      <button type="button" onClick={initialGame}>
-        restart
-      </button>
     </SnakeGame>
   );
 };
