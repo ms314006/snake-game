@@ -2,8 +2,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import GameOverWindow from '../../components/GameOverWindow';
 
-const MAP_ROW_AND_COLUMN_SIZE = 13;
-
 const SnakeGame = styled.div`
   width: 100%;
   height: 100%;
@@ -31,9 +29,9 @@ const GameScreen = styled.div`
 `;
 
 const MapGrid = styled.div`
-  width: 40px;
-  height: 40px;
-  border: 1px solid #b68973;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #b6897344;
   box-sizing: border-box;
 `;
 
@@ -41,17 +39,17 @@ const GameCanvas = styled.canvas`
   position: absolute;
 `;
 
+const MAP_ROW_AND_COLUMN_SIZE = 26;
 const initialMoveDirection = null;
 const initialSnakeLength = 1;
 
 let [xv, yv] = [0, 0];
 let [snakeHeadX, snakeHeadY] = [240, 240];
-let [appleX, appleY] = [40, 40];
+let [appleX, appleY] = [20, 20];
 let currentMoveDirection = initialMoveDirection;
 let isStartGame = false;
 let snakeLength = initialSnakeLength;
 let snakeBodys = [];
-let lastTriggerKeyDownEventAt = new Date().getTime();
 const Main = () => {
   const [isGameOver, setIsGameOver] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -83,7 +81,7 @@ const Main = () => {
       );
       ctx.fillStyle = '#eabf9f';
       for (let i = 0; i < snakeBodys.length; i += 1) {
-        ctx.fillRect(snakeBodys[i].x + 1, snakeBodys[i].y + 1, 38, 38);
+        ctx.fillRect(snakeBodys[i].x + 1, snakeBodys[i].y + 1, 18, 18);
         if (isStartGame && isSnakeHeadTouchBody(snakeBodys[i].x, snakeBodys[i].y)) {
           snakeLength = initialSnakeLength;
           setIsGameOver(true);
@@ -104,18 +102,18 @@ const Main = () => {
         );
 
         while ((originAppleX === appleX && originAppleY === appleY) || !isEmptyPosition(appleX, appleY)) {
-          [appleX, appleY] = [Math.floor(Math.random() * 13) * 40, Math.floor(Math.random() * 13) * 40];
+          [appleX, appleY] = [Math.floor(Math.random() * 13) * 20, Math.floor(Math.random() * 13) * 20];
         }
       }
       ctx.fillStyle = '#faf3e0';
-      ctx.fillRect(appleX, appleY, 40, 40);
+      ctx.fillRect(appleX, appleY, 20, 20);
     }
   };
 
   const initialGame = () => {
     [xv, yv] = [0, 0];
     [snakeHeadX, snakeHeadY] = [240, 240];
-    [appleX, appleY] = [40, 40];
+    [appleX, appleY] = [20, 20];
     currentMoveDirection = initialMoveDirection;
     snakeLength = initialSnakeLength;
     snakeBodys = [];
@@ -126,28 +124,24 @@ const Main = () => {
 
   useEffect(() => {
     const moveDirection = ({ keyCode }) => {
-      const triggerKeyDownEventAt = new Date().getTime();
-      if (triggerKeyDownEventAt - lastTriggerKeyDownEventAt < 150) return;
-      lastTriggerKeyDownEventAt = triggerKeyDownEventAt;
       isStartGame = true;
       const [TOP, RIGHT, BOTTOM, LEFT] = [38, 39, 40, 37];
-      console.log('hi');
       switch (keyCode) {
         case TOP:
           if (currentMoveDirection === BOTTOM) return;
-          [xv, yv] = [0, -40];
+          [xv, yv] = [0, -20];
           break;
         case RIGHT:
           if (currentMoveDirection === LEFT) return;
-          [xv, yv] = [40, 0];
+          [xv, yv] = [20, 0];
           break;
         case BOTTOM:
           if (currentMoveDirection === TOP) return;
-          [xv, yv] = [0, 40];
+          [xv, yv] = [0, 20];
           break;
         case LEFT:
           if (currentMoveDirection === RIGHT) return;
-          [xv, yv] = [-40, 0];
+          [xv, yv] = [-20, 0];
           break;
         default:
       }
