@@ -61,6 +61,20 @@ const Main = () => {
       if (!ctx) return;
       ctx.clearRect(0, 0, 520, 520);
 
+      if (appleX === snakeHeadX && appleY === snakeHeadY) {
+        snakeLength += 1;
+        const [originAppleX, originAppleY] = [appleX, appleY];
+        const isEmptyPosition = (newAppleX, newAppleY) => (
+          snakeBodys.every(snakeBody => snakeBody.x !== newAppleX || snakeBody.y !== newAppleY)
+        );
+
+        while ((originAppleX === appleX && originAppleY === appleY) || !isEmptyPosition(appleX, appleY)) {
+          [appleX, appleY] = [Math.floor(Math.random() * 13) * 20, Math.floor(Math.random() * 13) * 20];
+        }
+      }
+      ctx.fillStyle = '#faf3e0';
+      ctx.fillRect(appleX, appleY, 20, 20);
+
       snakeHeadX += xv;
       snakeHeadY += yv;
 
@@ -93,20 +107,6 @@ const Main = () => {
       if (snakeBodys.length > snakeLength) {
         snakeBodys.shift();
       }
-
-      if (appleX === snakeHeadX && appleY === snakeHeadY) {
-        snakeLength += 1;
-        const [originAppleX, originAppleY] = [appleX, appleY];
-        const isEmptyPosition = (newAppleX, newAppleY) => (
-          snakeBodys.every(snakeBody => snakeBody.x !== newAppleX || snakeBody.y !== newAppleY)
-        );
-
-        while ((originAppleX === appleX && originAppleY === appleY) || !isEmptyPosition(appleX, appleY)) {
-          [appleX, appleY] = [Math.floor(Math.random() * 13) * 20, Math.floor(Math.random() * 13) * 20];
-        }
-      }
-      ctx.fillStyle = '#faf3e0';
-      ctx.fillRect(appleX, appleY, 20, 20);
     }
   };
 
