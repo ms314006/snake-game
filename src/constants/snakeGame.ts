@@ -1,0 +1,4 @@
+export const MAP_ROW_AND_COLUMN_SIZE = 26;
+export const GRID_SIZE = 20;
+export const MAP_ROW_AND_COLUMN_LENGTH = MAP_ROW_AND_COLUMN_SIZE * GRID_SIZE;
+export const CENTER_POSITION_OF_MAP = (Math.floor(MAP_ROW_AND_COLUMN_SIZE / 2) - 1) * GRID_SIZE;
