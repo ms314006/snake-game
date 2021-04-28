@@ -102,8 +102,18 @@ const Main = () => {
     window.addEventListener('keydown', moveDirection);
 
     if (snakeGame.isStartGame === false) {
-      const drawIntervalId = window.setInterval(() => draw(drawIntervalId), 150);
+      let drawIntervalId = window.setInterval(() => draw(drawIntervalId), 150);
+      let reduceRenderGap = -5;
+      setInterval(() => {
+        if (reduceRenderGap > -100) {
+          const newDrawIntervalId = window.setInterval(() => draw(newDrawIntervalId), 150 + reduceRenderGap);
+          clearInterval(drawIntervalId);
+          drawIntervalId = newDrawIntervalId;
+          reduceRenderGap -= 5;
+        }
+      }, 5000);
     }
+
   }, [snakeGame]);
 
   return (
