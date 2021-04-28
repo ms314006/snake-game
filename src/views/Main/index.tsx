@@ -1,9 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SnakeGame from '../../class/SnakeGame';
-import {
-  GRID_SIZE, MAP_ROW_AND_COLUMN_SIZE, MAP_ROW_AND_COLUMN_LENGTH,
-} from '../../constants/snakeGame';
 import GameOverWindow from '../../components/GameOverWindow';
 
 const StyledSnakeGameComponent = styled.div`
@@ -23,8 +20,8 @@ const GameTitle = styled.div`
 `;
 
 const GameScreen = styled.div`
-  width: 520px;
-  height: 520px;
+  width: ${props => props.gridScreenWidth}px;
+  height: ${props => props.gridScreenWidth}px;
   border: 2px solid #b68973;
   border-radius: 4px;
   display: flex;
@@ -33,8 +30,8 @@ const GameScreen = styled.div`
 `;
 
 const MapGrid = styled.div`
-  width: 20px;
-  height: 20px;
+  width: ${props => props.gridSize}px;
+  height: ${props => props.gridSize}px;
   border: 1px solid #b6897344;
   box-sizing: border-box;
 `;
@@ -47,48 +44,25 @@ const Main = () => {
   const [snakeGame, setSnakeGame] = useState(new SnakeGame({}));
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-
   const draw = (drawIntervalId: number) => {
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d');
       if (!ctx) return;
-      ctx.clearRect(0, 0, snakeGame.map.rowLength, snakeGame.map.columnLength);
+      ctx.clearRect(0, 0, snakeGame.map.gridScreenWidth, snakeGame.map.gridScreenWidth);
 
-      if (snakeGame.snake.isAteApple(snakeGame.apple)) {
+      if (snakeGame.snake.isAteApple(snakeGame.apple.position)) {
         snakeGame.snake.addLength(1);
-        snakeGame.generateNewApplePosition();
+        const nextApplePosition = snakeGame.generateNewApplePosition();
+        snakeGame.apple.position = nextApplePosition;
       }
-      ctx.fillStyle = '#faf3e0';
-      ctx.fillRect(
-        snakeGame.apple.x,
-        snakeGame.apple.y,
-        snakeGame.map.gridSize,
-        snakeGame.map.gridSize,
-      );
+      snakeGame.apple.draw(ctx);
 
       const nextSnakeHeadPosition = snakeGame.generateNextSnakePosition();
+      snakeGame.snake.draw(ctx);
 
-      const isSnakeHeadTouchBody = (snakeBodyX: number, snakeBodyY: number) => (
-        snakeBodyX === nextSnakeHeadPosition.x && snakeBodyY === nextSnakeHeadPosition.y
-      );
-      ctx.fillStyle = '#eabf9f';
-      for (let i = 0; i < snakeGame.snake.bodys.length; i += 1) {
-        const { x: snakeBodyPositionX, y: snakeBodyPositionY } = snakeGame.snake.bodys[i];
-        ctx.fillRect(
-          snakeBodyPositionX + 1,
-          snakeBodyPositionY + 1,
-          snakeGame.map.gridSize - 2,
-          snakeGame.map.gridSize - 2,
-        );
-
-        if (
-          snakeGame.isStartGame
-          && i !== snakeGame.snake.tailLength - 1
-          && isSnakeHeadTouchBody(snakeBodyPositionX, snakeBodyPositionY)
-        ) {
-          setSnakeGame(new SnakeGame({ ...snakeGame, isGameOver: true }));
-          clearInterval(drawIntervalId);
-        }
+      if (snakeGame.isStartGame && snakeGame.snake.isTouchBody(nextSnakeHeadPosition)) {
+        setSnakeGame(new SnakeGame({ ...snakeGame, isGameOver: true }));
+        clearInterval(drawIntervalId);
       }
       snakeGame.snake.headPosition = nextSnakeHeadPosition;
     }
@@ -138,14 +112,21 @@ const Main = () => {
         Snake Game
         <span role="img" aria-label="snake">🐍</span>
       </GameTitle>
-      <GameScreen>
-        <GameCanvas ref={canvasRef} width="520px" height="520px" />
+      <GameScreen gridScreenWidth={snakeGame.map.gridScreenWidth}>
+        <GameCanvas
+          ref={canvasRef}
+          width={snakeGame.map.gridScreenWidth}
+          height={snakeGame.map.gridScreenWidth}
+        />
         {
           Array.from(Array((snakeGame.map.rowSize ** 2) - 1))
-            .map((number, index) => <MapGrid key={index} />)
+            .map((number, index) => (
+              <MapGrid key={index} gridSize={snakeGame.map.gridSize} />
+            ))
         }
         <MapGrid />
         <GameOverWindow
+          gridScreenWidth={snakeGame.map.gridScreenWidth}
           score={snakeGame.score}
           isGameOver={snakeGame.isGameOver}
           initialGame={initialGame}

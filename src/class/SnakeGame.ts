@@ -1,16 +1,17 @@
 import Map, { MapInterface } from './Map';
 import Snake, { SnakeInterface } from './Snake';
+import Apple, { AppleInterface } from './Apple';
 import Position, { PositionInterface } from './Position';
 
 interface SnakeGameInterface {
   map: MapInterface;
   isStartGame: boolean;
   isGameOver: boolean;
-  apple: PositionInterface;
+  apple: AppleInterface;
   snake: SnakeInterface;
   score: number;
 
-  generateNewApplePosition: () => void;
+  generateNewApplePosition: () => PositionInterface;
   generateNextSnakePosition: () => PositionInterface;
 }
 
@@ -21,7 +22,7 @@ class SnakeGame implements SnakeGameInterface {
 
   isGameOver: boolean = false;
 
-  apple: PositionInterface = new Position(40, 40);
+  apple: AppleInterface = new Apple({ });
 
   snake: SnakeInterface = new Snake({ });
 
@@ -30,15 +31,19 @@ class SnakeGame implements SnakeGameInterface {
     const {
       isStartGame = false,
       isGameOver = false,
-      apple = new Position(40, 40),
+      apple = new Apple({
+        appleSize: this.map.gridSize,
+        position: new Position(this.map.gridSize, this.map.gridSize),
+      }),
       snake = new Snake({
+        bodySize: this.map.gridSize - 2,
         bodys: [new Position(this.map.centerPosition.x, this.map.centerPosition.y)],
       }),
     } = props || {};
 
     this.isStartGame = isStartGame;
     this.isGameOver = isGameOver;
-    this.apple = new Position(apple.x, apple.y);
+    this.apple = new Apple(apple);
     this.snake = new Snake(snake);
   }
 
@@ -46,19 +51,22 @@ class SnakeGame implements SnakeGameInterface {
     return this.snake.tailLength - 1;
   }
 
-  private isEmptyPosition() {
+  private isEmptyPosition(x: number, y: number) {
     return this.snake.bodys.every(
-      snakeBody => snakeBody.x !== this.apple.x || snakeBody.y !== this.apple.y,
+      snakeBody => snakeBody.x !== x || snakeBody.y !== y,
     );
   }
 
   generateNewApplePosition() {
-    while (!this.isEmptyPosition()) {
-      this.apple = new Position(
+    let { x, y } = this.apple.position;
+    do {
+      [x, y] = [
         Math.floor(Math.random() * this.map.columnSize) * this.map.gridSize,
         Math.floor(Math.random() * this.map.rowSize) * this.map.gridSize,
-      );
-    }
+      ];
+    } while (!this.isEmptyPosition(x, y));
+
+    return new Position(x, y);
   }
 
   generateNextSnakePosition() {
@@ -68,15 +76,15 @@ class SnakeGame implements SnakeGameInterface {
     y += this.snake.yDisplacement;
 
     if (x < 0) {
-      x = this.map.columnLength - this.map.gridSize;
+      x = this.map.gridScreenWidth - this.map.gridSize;
     }
-    if (x > this.map.columnLength - 1) {
+    if (x > this.map.gridScreenWidth - 1) {
       x = 0;
     }
     if (y < 0) {
-      y = this.map.rowLength - this.map.gridSize;
+      y = this.map.gridScreenWidth - this.map.gridSize;
     }
-    if (y > this.map.rowLength - 1) {
+    if (y > this.map.gridScreenWidth - 1) {
       y = 0;
     }
     return new Position(x, y);

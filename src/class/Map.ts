@@ -1,36 +1,31 @@
 import {
-  GRID_SIZE, MAP_ROW_AND_COLUMN_SIZE,
+  GRID_SIZE, GRID_COUNT, GAME_SCREEN_WIDTH
 } from '../constants/snakeGame';
 import { PositionInterface } from '../class/Position';
 
 export interface MapInterface {
+  gridScreenWidth: number;
   rowSize: number;
   columnSize: number;
   gridSize: number;
-  rowLength: number;
-  columnLength: number;
   centerPosition: PositionInterface;
 }
 
 export default class Map implements MapInterface {
+  gridScreenWidth: number;
+
   rowSize: number;
 
   columnSize: number;
 
-  gridSize: number;
-
   constructor() {
-    this.rowSize = MAP_ROW_AND_COLUMN_SIZE;
-    this.columnSize = MAP_ROW_AND_COLUMN_SIZE;
-    this.gridSize = GRID_SIZE;
+    this.gridScreenWidth = GAME_SCREEN_WIDTH;
+    this.rowSize = GRID_COUNT;
+    this.columnSize = GRID_COUNT;
   }
 
-  get rowLength() {
-    return this.rowSize * this.gridSize;
-  }
-
-  get columnLength() {
-    return this.columnSize * this.gridSize;
+  get gridSize() {
+    return Math.floor(this.gridScreenWidth / this.columnSize);
   }
 
   get centerPosition() {

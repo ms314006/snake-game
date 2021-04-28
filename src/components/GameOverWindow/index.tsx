@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 const GameOverWindow = styled.div`
-  width: 520px;
-  height: 520px;
+  width: ${props => props.gridScreenWidth}px;
+  height: ${props => props.gridScreenWidth}px;
   background: #111217aa;
   position: relative;
-  top: ${props => (props.isGameOver ? '-520' : '-1050')}px;
+  top: ${props => (props.isGameOver ? -props.gridScreenWidth : -props.gridScreenWidth * 2)}px;
   transition: top 0.5s;
   display: flex;
   flex-direction: column;
@@ -41,15 +41,16 @@ const RestartButton = styled.button`
 `;
 
 type GameOverWindow = {
+  gridScreenWidth: number;
   score: number;
   isGameOver: boolean;
   initialGame: () => void;
 }
 
 export default (props: GameOverWindow) => {
-  const { initialGame, isGameOver, score } = props;
+  const { initialGame, isGameOver, score, gridScreenWidth } = props;
   return (
-    <GameOverWindow isGameOver={isGameOver}>
+    <GameOverWindow isGameOver={isGameOver} gridScreenWidth={gridScreenWidth}>
       <Title>GAME OVER</Title>
       <GameScore>{`Score ${score}`}</GameScore>
       <RestartButton onClick={initialGame}>
