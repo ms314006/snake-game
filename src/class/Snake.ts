@@ -82,15 +82,15 @@ class Snake implements SnakeInterface {
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = '#eabf9f';
-    for (let i = 0; i < this.bodys.length; i += 1) {
-      const { x: snakeBodyPositionX, y: snakeBodyPositionY } = this.bodys[i];
+    this.bodys.forEach((body) => {
+      const { x: snakeBodyPositionX, y: snakeBodyPositionY } = body;
       ctx.fillRect(
         snakeBodyPositionX + 1,
         snakeBodyPositionY + 1,
         this.bodySize,
         this.bodySize,
       );
-    }
+    });
   }
 }
 

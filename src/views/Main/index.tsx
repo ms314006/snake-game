@@ -44,7 +44,7 @@ const Main = () => {
   const [snakeGame, setSnakeGame] = useState(new SnakeGame({}));
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const draw = (drawIntervalId: number) => {
+  const draw = () => {
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d');
       if (!ctx) return;
@@ -62,9 +62,18 @@ const Main = () => {
 
       if (snakeGame.isStartGame && snakeGame.snake.isTouchBody(nextSnakeHeadPosition)) {
         setSnakeGame(new SnakeGame({ ...snakeGame, isGameOver: true }));
-        clearInterval(drawIntervalId);
+        return;
       }
       snakeGame.snake.headPosition = nextSnakeHeadPosition;
+    }
+
+    if (!snakeGame.isGameOver) {
+      const MAX_FPS = 35;
+      const INCREASE_FPS = 0.01;
+      setTimeout(() => { requestAnimationFrame(draw); }, 1000 / snakeGame.fps);
+      if (snakeGame.isStartGame && snakeGame.fps < MAX_FPS) {
+        snakeGame.fps += INCREASE_FPS;
+      }
     }
   };
 
@@ -100,20 +109,9 @@ const Main = () => {
       snakeGame.snake.currentMoveDirection = keyCode;
     };
     window.addEventListener('keydown', moveDirection);
-
-    if (snakeGame.isStartGame === false) {
-      let drawIntervalId = window.setInterval(() => draw(drawIntervalId), 150);
-      let reduceRenderGap = -5;
-      setInterval(() => {
-        if (snakeGame.isStartGame && reduceRenderGap > -100) {
-          const newDrawIntervalId = window.setInterval(() => draw(newDrawIntervalId), 150 + reduceRenderGap);
-          clearInterval(drawIntervalId);
-          drawIntervalId = newDrawIntervalId;
-          reduceRenderGap -= 5;
-        }
-      }, 5000);
+    if (!snakeGame.isGameOver) {
+      draw();
     }
-
   }, [snakeGame]);
 
   return (

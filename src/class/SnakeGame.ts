@@ -10,6 +10,7 @@ interface SnakeGameInterface {
   apple: AppleInterface;
   snake: SnakeInterface;
   score: number;
+  fps: number;
 
   generateNewApplePosition: () => PositionInterface;
   generateNextSnakePosition: () => PositionInterface;
@@ -18,13 +19,15 @@ interface SnakeGameInterface {
 class SnakeGame implements SnakeGameInterface {
   map: MapInterface;
 
-  isStartGame: boolean = false;
+  isStartGame: boolean;
 
-  isGameOver: boolean = false;
+  isGameOver: boolean;
 
-  apple: AppleInterface = new Apple({ });
+  apple: AppleInterface;
 
-  snake: SnakeInterface = new Snake({ });
+  snake: SnakeInterface;
+
+  fps: number;
 
   constructor(props) {
     this.map = new Map();
@@ -39,12 +42,14 @@ class SnakeGame implements SnakeGameInterface {
         bodySize: this.map.gridSize - 2,
         bodys: [new Position(this.map.centerPosition.x, this.map.centerPosition.y)],
       }),
+      fps = 6,
     } = props || {};
 
     this.isStartGame = isStartGame;
     this.isGameOver = isGameOver;
     this.apple = new Apple(apple);
     this.snake = new Snake(snake);
+    this.fps = fps;
   }
 
   get score() {
