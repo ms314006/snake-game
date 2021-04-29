@@ -105,7 +105,7 @@ const Main = () => {
       let drawIntervalId = window.setInterval(() => draw(drawIntervalId), 150);
       let reduceRenderGap = -5;
       setInterval(() => {
-        if (reduceRenderGap > -100) {
+        if (snakeGame.isStartGame && reduceRenderGap > -100) {
           const newDrawIntervalId = window.setInterval(() => draw(newDrawIntervalId), 150 + reduceRenderGap);
           clearInterval(drawIntervalId);
           drawIntervalId = newDrawIntervalId;
